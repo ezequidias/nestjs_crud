@@ -1,10 +1,40 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module, OnModuleInit, MiddlewareConsumer } from '@nestjs/common';
 
+import { Connection } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import ormconfig from '../ormconfig';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './controllers/app.controller';
+
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+
+const imports = [
+  ConfigModule.forRoot({
+    isGlobal: true,
+    envFilePath: [`./.env.${process.env.NODE_ENV}`, './.env'],
+  }),
+  TypeOrmModule.forRoot(ormconfig),
+  AuthModule,
+  UsersModule
+];
 @Module({
-  imports: [],
+  imports,
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private connection: Connection) { }
+
+  // configure(consumer: MiddlewareConsumer): void {
+  //   consumer.apply(Sentry.Handlers.requestHandler()).forRoutes({
+  //     path: '*',
+  //     method: RequestMethod.ALL,
+  //   });
+  // }
+
+  onModuleInit(): void {
+    console.log(`Version: ${globalThis.TOOLJET_VERSION}`);
+    console.log(`Initializing server modules 📡 `);
+  }
+}
