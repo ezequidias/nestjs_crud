@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "es2019",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -16,6 +16,27 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@ee/*": [
+        "ee/*"
+      ],
+      "@services/*": [
+        "src/services/*"
+      ],
+      "@controllers/*": [
+        "src/controllers/*"
+      ],
+      "@repositories/*": [
+        "src/repositories/*"
+      ],
+      "@dto/*": [
+        "src/dto/*"
+      ]
+    },
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

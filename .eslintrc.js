@@ -1,14 +1,18 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
+    ecmaVersion: 12,
     project: 'tsconfig.json',
-    tsconfigRootDir : __dirname, 
+    tsconfigRootDir: __dirname,
     sourceType: 'module',
+    "warnOnUnsupportedTypeScriptVersion": false
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', '@typescript-eslint', 'jest', 'prettier'],
   extends: [
+    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:cypress/recommended',
   ],
   root: true,
   env: {
@@ -17,9 +21,40 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    'prettier/prettier': [
+      'error',
+      {
+        semi: true,
+        trailingComma: 'es5',
+        printWidth: 120,
+        singleQuote: true,
+      },
+    ],
+    '@typescript-eslint/no-floating-promises': ['error'],
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'none' }],
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/ban-types': [
+      'error',
+      {
+        types: {
+          object: false,
+        },
+        extendDefaults: true,
+      },
+    ],
   },
+  overrides: [
+    {
+      files: ['*.ts'],
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: __dirname,
+      },
+    },
+  ],
 };

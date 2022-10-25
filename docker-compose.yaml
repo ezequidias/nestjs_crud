@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  server:
+    build:
+      context: ./
+      dockerfile: ./docker/server.Dockerfile.dev
+    image: nestjs-server:development
+    platform: linux/x86_64
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/app:delegated
+      - ./plugins:/app/plugins
+      - /app/node_modules/
+      - ./.env:/app/.env
+      - ./.env.test:/app/.env.test
+    ports:
+      - 3000:3000
+    environment:
+      - SERVE_CLIENT=false
+      - FORCE_COLOR=1
+    command: npm run start:dev
+
+  postgres:
+    image: postgres:13
+    restart: always
+    ports:
+      - 54322:5432
+    volumes:
+      - postgres:/data/postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+volumes:
+  postgres:
