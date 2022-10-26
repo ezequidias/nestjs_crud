@@ -7,9 +7,9 @@ import {
     BeforeInsert,
     BeforeUpdate,
     BaseEntity,
-    OneToOne,
-    JoinColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
+
 const bcrypt = require('bcrypt');
 import { File } from './file.entity';
 
@@ -35,9 +35,6 @@ export class User extends BaseEntity {
     @Column()
     email: string;
 
-    @Column({ name: 'avatar_id', nullable: true, default: null })
-    avatarId?: string;
-
     @Column({ name: 'invitation_token' })
     invitationToken: string;
 
@@ -45,13 +42,8 @@ export class User extends BaseEntity {
     forgotPasswordToken: string;
 
     @Column({ name: 'password_digest' })
+    @Exclude()
     password: string;
-
-    @Column({ name: 'role' })
-    role: string;
-
-    @Column({ name: 'password_retry_count' })
-    passwordRetryCount: number;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
     createdAt: Date;
@@ -59,12 +51,4 @@ export class User extends BaseEntity {
     @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
     updatedAt: Date;
 
-    @JoinColumn({ name: 'avatar_id' })
-    @OneToOne(() => File, {
-        nullable: true,
-    })
-    avatar?: File;
-
-    isPasswordLogin: boolean;
-    isSSOLogin: boolean;
 }

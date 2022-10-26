@@ -46,8 +46,7 @@ export class AuthService {
         const passwordRetryAllowed = passwordRetryConfig ? parseInt(passwordRetryConfig) : 5;
 
         if (
-            this.configService.get<string>('DISABLE_PASSWORD_RETRY_LIMIT') !== 'true' &&
-            user.passwordRetryCount >= passwordRetryAllowed
+            this.configService.get<string>('DISABLE_PASSWORD_RETRY_LIMIT') !== 'true'
         ) {
             throw new UnauthorizedException(
                 'Maximum password retry limit reached, please reset your password using forget password option'
@@ -55,7 +54,6 @@ export class AuthService {
         }
 
         if (!(await bcrypt.compare(password, user.password))) {
-            await this.usersService.updateUser(user.id, { passwordRetryCount: user.passwordRetryCount + 1 });
             return;
         }
 
@@ -68,10 +66,6 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
-
-        await this.usersService.updateUser(user.id, {
-            passwordRetryCount: 0,
-        });
 
         const payload: JWTPayload = {
             username: user.id,

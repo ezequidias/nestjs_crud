@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
+import {
+    paginate,
+    Pagination,
+    IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 import { cleanObject, dbTransactionWrap } from 'src/helpers/utils.helper';
 const uuid = require('uuid');
 const bcrypt = require('bcrypt');
@@ -12,6 +17,14 @@ export class UsersService {
         @InjectRepository(User)
         private usersRepository: Repository<User>,
     ) { }
+
+    async paginate(options: IPaginationOptions): Promise<Pagination<User>> {
+        return paginate<User>(this.usersRepository, options);
+    }
+
+    async findAll(): Promise<User[]> {
+        return this.usersRepository.find();
+    }
 
     async findOne(id: string): Promise<User> {
         return this.usersRepository.findOne({ where: { id } });
@@ -83,7 +96,6 @@ export class UsersService {
             lastName,
             password: hashedPassword,
         };
-
         // removing keys with undefined values
         cleanObject(updatableParams);
 
@@ -94,12 +106,19 @@ export class UsersService {
         }, manager);
     }
 
-    async updateUser(userId: string, updatableParams: Partial<User>, manager?: EntityManager) {
-        if (updatableParams.password) {
-            updatableParams.password = bcrypt.hashSync(updatableParams.password, 10);
-        }
-        await dbTransactionWrap(async (manager: EntityManager) => {
+    async updateUser(userId: string, updatableParams: Partial<User>, manager?: EntityManager): Promise<User> {
+        console.log('asd', updatableParams)
+        if (updatableParams.password) updatableParams.password = bcrypt.hashSync(updatableParams.password, 10);
+        return await dbTransactionWrap(async (manager: EntityManager) => {
             await manager.update(User, userId, updatableParams);
+            const user = await manager.findOne(User, { where: { id: userId } });
+            return user;
+        }, manager);
+    }
+
+    async delete(userId: string, manager?: EntityManager) {
+        await dbTransactionWrap(async (manager: EntityManager) => {
+            await manager.delete(User, userId);
         }, manager);
     }
 

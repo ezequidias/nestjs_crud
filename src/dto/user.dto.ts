@@ -1,9 +1,14 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsString, IsOptional, IsNotEmpty, IsNumberString, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { sanitizeInput } from 'src/helpers/utils.helper';
+import { sanitizeInput, lowercaseString } from 'src/helpers/utils.helper';
 import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateUserDto {
+    @IsEmail()
+    @IsNotEmpty()
+    @Transform(({ value }) => lowercaseString(value))
+    email: string;
+
     @IsString()
     @IsOptional()
     @IsNotEmpty()
@@ -21,6 +26,7 @@ export class CreateUserDto {
     password: string;
 
     @IsString()
+    @IsOptional()
     @IsNotEmpty()
     token: string;
 
@@ -29,5 +35,13 @@ export class CreateUserDto {
     @Transform(({ value }) => sanitizeInput(value))
     role: string;
 }
+
+export class FindOneParams {
+    @IsUUID()
+    @IsString()
+    @IsNotEmpty()
+    userId: string;
+}
+
 
 export class UpdateUserDto extends PartialType(CreateUserDto) { }

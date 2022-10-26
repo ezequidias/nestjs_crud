@@ -6,6 +6,7 @@ import ormconfig from '../ormconfig';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './controllers/app.controller';
 
+import { AppConfigModule } from './modules/app_config/app_config.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 
@@ -15,6 +16,7 @@ const imports = [
     envFilePath: [`./.env.${process.env.NODE_ENV}`, './.env'],
   }),
   TypeOrmModule.forRoot(ormconfig),
+  AppConfigModule,
   AuthModule,
   UsersModule
 ];
